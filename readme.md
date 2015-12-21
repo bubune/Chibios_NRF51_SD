@@ -7,6 +7,7 @@ see [issue] section and main.c for explanation
 [Orgainisation folder]:
 
 Chibios => The RTOS folder without modification, base on Chibios 2.6.5
+
 ported => specific ported code for NRF51
 
 [Before compiling]
