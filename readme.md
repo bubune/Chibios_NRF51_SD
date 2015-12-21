@@ -1,7 +1,8 @@
 # nrf51 Chibios Port (2.6.5) With ANT+ HRM belt
 Chibios port on the NRF51422 with Softdevice S210. HRM demo
 
--> THE PORT IS NOT FUNCTIONAL, see [issue section and main.c for explanation <-
+               -> THE PORT IS NOT FUNCTIONAL <-
+see [issue] section and main.c for explanation
 
 [Orgainisation folder]:
 
