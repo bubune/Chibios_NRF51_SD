@@ -4,6 +4,7 @@ Chibios port on the NRF51422 with Softdevice S210. HRM demo
 -> THE PORT IS NOT FUNCTIONAL, see [issue section and main.c for explanation <-
 
 [Orgainisation folder]:
+
 Chibios => The RTOS folder without modification, base on Chibios 2.6.5
 ported => specific ported code for NRF51
 
@@ -30,6 +31,7 @@ make all
 make debug
 
 [Demo]
+
 the application run 2 threads defined in main.c.
 -1st thread run a blink led
 -2nd thread
@@ -40,8 +42,7 @@ the application run 2 threads defined in main.c.
 [Issue]
 
 when uart and softdevice are enabled after a few sec the application stay blocked, probably due to an interruption.
-Sometimes It goes in the hardfault handler. Something interresting, I get 0xDEADBEEF in mcu register and for sure I've never used this value.
-If I disable the uart int, and use the a led to check that ant+ data comes, it never blocks
+Sometimes It goes in the hardfault handler. Something interresting, I get 0xDEADBEEF in mcu register and for sure I've never used this value. If I disable the uart int, and use the a led to check that ant+ data comes, it never blocks
 
 A part of an email that I' wrote to the Nordic semi support
 
