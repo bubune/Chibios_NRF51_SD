@@ -277,10 +277,10 @@ void sd_lld_start(SerialDriver *sdp, const SerialConfig *config) {
   if (sdp->state == SD_STOP) {
 #if NRF51_SERIAL_USE_UART0
     if (&SD1 == sdp) {
-//      sd_nvic_SetPriority(UART0_IRQn,3);  =>  It seems it doesn't work!
-//      sd_nvic_EnableIRQ(UART0_IRQn);
-      nvicEnableVector(UART0_IRQn,
-                       CORTEX_PRIORITY_MASK(NRF51_SERIAL_UART0_IRQ_PRIORITY));
+      sd_nvic_SetPriority(UART0_IRQn,3);  //=>  It seems it doesn't work!
+      sd_nvic_EnableIRQ(UART0_IRQn);
+//      nvicEnableVector(UART0_IRQn,
+//                       CORTEX_PRIORITY_MASK(NRF51_SERIAL_UART0_IRQ_PRIORITY));
     }
 #endif
   }

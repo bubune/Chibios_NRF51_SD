@@ -73,7 +73,6 @@ void hal_lld_init(void) {
   NRF_RTC1->EVTENSET = 1;
   NRF_RTC1->INTENSET = 1;
   nvicEnableVector(RTC1_IRQn, CORTEX_PRIORITY_MASK(3));
-  NRF_RTC1->TASKS_START = 1;
 }
 
 

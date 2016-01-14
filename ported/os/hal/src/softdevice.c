@@ -76,7 +76,6 @@ void sddObjectInit(SoftdeviceDriver *sddp) {
   sddp->state  = SDD_STOP;
   /* MailBoxes Init */
   chMBInit(&sddp->imb, sddp->iMbBuf, ANT_EVENT_SIZE);
-  chMBInit(&sddp->omb, sddp->oMbBuf, ANT_EVENT_SIZE);
 }
 
 /**

@@ -109,10 +109,6 @@ typedef struct {
    * @brief Ant Event.
    */
   uint8_t                  ant_event_message_buffer[MESG_BUFFER_SIZE];
-  /**
-   * @brief status variable.
-   */
-  uint8_t                  isFree;
 
 } antEventMessage;
 
@@ -122,6 +118,10 @@ typedef struct {
  */
 
 typedef struct {
+  /**
+   * @brief Ant Channel.
+   */
+  uint8_t                  ant_channel;
   /**
    * @brief Ant Channel Type.
    */
@@ -166,8 +166,6 @@ typedef struct {
 
 
 #define ANT_EVENT_SIZE     8
-#define FREE               1
-#define NOTFREE            0
 
 /**
  * @brief   Structure representing an Softdevice driver.
@@ -176,39 +174,27 @@ struct SoftdeviceDriver {
   /**
    * @brief Driver state.
    */
-  sddstate_t                state;
+  sddstate_t               state;
   /**
    * @brief Softdevice return error code
    */
-  uint32_t                  sdderrcode;
+  uint32_t                 sdderrcode;
   /**
    * @brief Input Mailbox.
    */
-   Mailbox                  imb;
+  Mailbox                  imb;
   /**
    * @brief Input Mailbox buffer.
    */
-   msg_t                    iMbBuf[ANT_EVENT_SIZE];
-  /**
-   * @brief Output Mailbox.
-   */
-   Mailbox                  omb;
-  /**
-   * @brief Output Mailbox buffer.
-   */
-   msg_t                   oMbBuf[ANT_EVENT_SIZE];
+  msg_t                    iMbBuf[ANT_EVENT_SIZE];
   /**
    * @brief Input circular buffer.
    */
-  antEventMessage           ib[ANT_EVENT_SIZE];
+  antEventMessage          ib[ANT_EVENT_SIZE];
   /**
    * @brief Index ib buffer.
    */
-  uint32_t                  indexIb;
-  /**
-   * @brief Input circular buffer.
-   */
-  antEventMessage           ob[ANT_EVENT_SIZE];
+  uint32_t                 indexIb;
 };
 
 /*===========================================================================*/

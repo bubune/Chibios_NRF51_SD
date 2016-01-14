@@ -56,7 +56,6 @@ CH_IRQ_HANDLER(SysTickVector) {
 #ifdef NRF51
   NRF_RTC1->EVENTS_TICK = 0;
 #endif
-
   chSysLockFromIsr();
   chSysTimerHandlerI();
   chSysUnlockFromIsr();
@@ -154,8 +153,13 @@ void _port_switch_from_isr(void) {
   dbg_check_unlock();
   asm volatile ("_port_exit_from_isr:" : : : "memory");
 #if CORTEX_ALTERNATE_SWITCH
-  SCB_ICSR = ICSR_PENDSVSET;
+#ifdef NRF51
   port_unlock();
+#endif
+  SCB_ICSR = ICSR_PENDSVSET;
+#ifndef NRF51
+  port_unlock();
+#endif
 #else
   SCB_ICSR = ICSR_NMIPENDSET;
 #endif
@@ -214,32 +218,18 @@ void _port_thread_start(void) {
 
 extern uint32_t uxCriticalNesting;
 
-//#if 0
 void port_lock( void ) {
   uint8_t IS_NESTED_CRITICAL_REGION = ++uxCriticalNesting > 1 ? 1 : 0;
-  sd_nvic_critical_region_enter(&IS_NESTED_CRITICAL_REGION);
-//  uint32_t err_code = sd_nvic_critical_region_enter(&IS_NESTED_CRITICAL_REGION);
-//  if (err_code == NRF_ERROR_SOFTDEVICE_NOT_ENABLED) {
-//    asm volatile ("cpsid   i" : : : "memory");
-//   }
-//  else {
-//      APP_ERROR_CHECK(err_code);
-//  }
+
+  if(uxCriticalNesting == 1)
+    sd_nvic_critical_region_enter(&IS_NESTED_CRITICAL_REGION);
 }
 
 void port_unlock( void ) {
   uint8_t IS_NESTED_CRITICAL_REGION = uxCriticalNesting-- > 1 ? 1 : 0;
-  sd_nvic_critical_region_exit(IS_NESTED_CRITICAL_REGION);
-//    asm volatile ("cpsie   i" : : : "memory");
-//  uint32_t err_code = sd_nvic_critical_region_exit(IS_NESTED_CRITICAL_REGION);
-//  if (err_code != NRF_ERROR_SOFTDEVICE_NOT_ENABLED) {
-//    asm volatile ("cpsie   i" : : : "memory");
-//  }
-//  else {
-//      APP_ERROR_CHECK(err_code);
-//  }
+  if(uxCriticalNesting==0)
+    sd_nvic_critical_region_exit(IS_NESTED_CRITICAL_REGION);
 }
-//#endif
 
 
 /** @} */

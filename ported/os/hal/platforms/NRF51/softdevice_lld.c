@@ -69,8 +69,9 @@ static const SoftdeviceConfig default_config = {
  */
 void softdevice_assertion_handler(uint32_t pc, uint16_t line_num, const uint8_t * file_name)
 {
-//    UNUSED_PARAMETER(pc);
-//    assert_nrf_callback(line_num, file_name);
+#if CH_DBG_ENABLED || defined(__DOXYGEN__)
+    chDbgPanic("SD assertion");
+#endif
 }
 
 /**
@@ -85,13 +86,10 @@ static void serve_interruptSD(SoftdeviceDriver *sddp) {
 
   chSysLockFromIsr();
 
-//  if( sddp->ib[sddp->indexIb].isFree == FREE)
-//  {
-    antEventMessage *ib = &sddp->ib[sddp->indexIb];
-    sddp->sdderrcode = sd_ant_event_get(&ib->ant_channel, &ib->ant_event, ib->ant_event_message_buffer);
-    chMBPostI(&sddp->imb, (uint32_t)ib);
-    sddp->indexIb++;
-//  }
+  antEventMessage *ib = &sddp->ib[sddp->indexIb];
+  sddp->sdderrcode = sd_ant_event_get(&ib->ant_channel, &ib->ant_event, ib->ant_event_message_buffer);
+  chMBPostI(&sddp->imb, (uint32_t)ib);
+  sddp->indexIb++;
 
   /* Circulat buf */
   if(sddp->indexIb++ >= ANT_EVENT_SIZE)
@@ -131,17 +129,10 @@ CH_IRQ_HANDLER(SWI2_IRQHandler) {
  */
 void sdd_lld_init(void) {
 
-  uint8_t i;
   SoftdeviceDriver *sddp = &SDD1;
 
   /* Driver initialization.*/
   sddObjectInit(sddp);
-
-  for(i=0; i<ANT_EVENT_SIZE; ++i)
-  {
-    sddp->ib[i].isFree = FREE;
-    sddp->ob[i].isFree = FREE;
-  }
 
   sddp->indexIb = 0;
 }
@@ -174,7 +165,6 @@ uint32_t sdd_lld_start(SoftdeviceDriver *sddp, const SoftdeviceConfig *config) {
 
       // Enable application IRQ (triggered from protocol).
       sddp->sdderrcode = sd_nvic_EnableIRQ(SWI2_IRQn);
-      nvicEnableVector(SWI2_IRQn, CORTEX_PRIORITY_MASK(3));
     }
   }
   return sddp->sdderrcode;
@@ -205,8 +195,6 @@ uint32_t sdd_lld_stop(SoftdeviceDriver *sddp) {
   return sddp->sdderrcode;
 }
 
-#define HRMRX_ANT_CHANNEL 0
-
 /**
  * @brief   Opne an ANT channel to a device.
  *
@@ -225,26 +213,26 @@ uint32_t sdd_lld_open_channel(SoftdeviceDriver *sddp, antDeviceProfile *p)
                                                     p->ant_network_key);
 
       // Set Channel Number.
-      sddp->sdderrcode = sd_ant_channel_assign(HRMRX_ANT_CHANNEL,
+      sddp->sdderrcode = sd_ant_channel_assign(p->ant_channel,
                                                p->ant_channel_type,
                                                p->ant_network_number,
                                                p->ant_assign);
       // Set Channel ID.
-      sddp->sdderrcode = sd_ant_channel_id_set(HRMRX_ANT_CHANNEL,
+      sddp->sdderrcode = sd_ant_channel_id_set(p->ant_channel,
                                                p->ant_device_number,
                                                p->ant_device_type,
                                                p->ant_trans_type);
 
       // Set Channel RF frequency.
-      sddp->sdderrcode = sd_ant_channel_radio_freq_set(HRMRX_ANT_CHANNEL,
+      sddp->sdderrcode = sd_ant_channel_radio_freq_set(p->ant_channel,
                                                        p->ant_rf_channel);
 
       // Set Channel period.
-      sddp->sdderrcode = sd_ant_channel_period_set(HRMRX_ANT_CHANNEL,
+      sddp->sdderrcode = sd_ant_channel_period_set(p->ant_channel,
                                                    p->ant_msg_period);
 
       // Open Channels.
-      sddp->sdderrcode = sd_ant_channel_open(HRMRX_ANT_CHANNEL);
+      sddp->sdderrcode = sd_ant_channel_open(p->ant_channel);
     }
   }
   return sddp->sdderrcode;

@@ -122,8 +122,10 @@ void halInit(void) {
 #if HAL_USE_RTC || defined(__DOXYGEN__)
   rtcInit();
 #endif
+#ifdef NRF51
 #if HAL_USE_SOFTDEVICE || defined(__DOXYGEN__)
  sddInit();
+#endif
 #endif
   /* Board specific initialization.*/
   boardInit();
